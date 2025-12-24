@@ -1,0 +1,130 @@
+til.*;
+
+public class Laba1 {
+    public static void main(String[] args) {
+        UniqueArray arr = new UniqueArray().process();
+        System.out.println(arr.display());
+
+        Angle a1 = new Angle().init(45, 30, 45);
+        Angle a2 = new Angle().init(30, 45, 20);
+        System.out.println(a1.roundToDegrees());
+        System.out.println(a1.add(a2).display());
+
+        Performance p1 = new Performance().init(500, 100);
+        Performance p2 = new Performance().init(700, 80);
+        Performance p3 = new Performance().init(1000, 50);
+        DailyPerformances day = new DailyPerformances().init(p1, p2, p3, 80, 60, 95);
+        System.out.println(day.totalDailyRevenue());
+        System.out.println(day.minRevenuePerformance().display());
+    }
+}
+// Задание 1
+class UniqueArray {
+    public int[] A;
+    public int[] B;
+
+    public UniqueArray process() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("N (четное): ");
+        int N = sc.nextInt();
+        A = new int[N];
+
+        System.out.print("Элементы: ");
+        for (int i = 0; i < N; i++) {
+            A[i] = sc.nextInt();
+        }
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : A) map.put(num, map.getOrDefault(num, 0) + 1);
+
+        List<Integer> list = new ArrayList<>();
+        for (int num : A) if (map.get(num) == 1) list.add(num);
+
+        B = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) B[i] = list.get(i);
+
+        sc.close();
+        return this;
+    }
+
+    public String display() {
+        return "Уникальных: " + B.length + " B: " + Arrays.toString(B);
+    }
+}
+// Задание 2
+class Angle {
+    public int deg;
+    public int min;
+    public int sec;
+
+    public Angle init(int d, int m, int s) {
+        this.deg = d;
+        this.min = m;
+        this.sec = s;
+        return this;
+    }
+
+    public int roundToDegrees() {
+        return min >= 30 ? deg + 1 : deg;
+    }
+
+    public Angle add(Angle other) {
+        return new Angle().init(deg + other.deg, min + other.min, sec + other.sec);
+    }
+
+    public String display() {
+        return deg + "° " + min + "' " + sec + "\"";
+    }
+}
+// Задание 3
+class Performance {
+    public double price;
+    public int tickets;
+
+    public Performance init(double p, int t) {
+        this.price = p;
+        this.tickets = t;
+        return this;
+    }
+
+    public double expected(double percent) {
+        return (tickets * percent / 100) * price;
+    }
+
+    public String display() {
+        return price + " руб, " + tickets + " билетов";
+    }
+}
+
+class DailyPerformances {
+    public Performance m;
+    public Performance a;
+    public Performance e;
+    public double mp;
+    public double ap;
+    public double ep;
+
+    public DailyPerformances init(Performance m, Performance a, Performance e, double mp, double ap, double ep) {
+        this.m = m;
+        this.a = a;
+        this.e = e;
+        this.mp = mp;
+        this.ap = ap;
+        this.ep = ep;
+        return this;
+    }
+
+    public double totalDailyRevenue() {
+        return m.expected(mp) + a.expected(ap) + e.expected(ep);
+    }
+
+    public Performance minRevenuePerformance() {
+        double mr = m.expected(mp);
+        double ar = a.expected(ap);
+        double er = e.expected(ep);
+
+        if (mr <= ar && mr <= er) return m;
+        if (ar <= mr && ar <= er) return a;
+        return e;
+    }
+}
