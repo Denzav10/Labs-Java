@@ -1,0 +1,170 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
+class TreeNode {
+    int value;
+    TreeNode left;
+    TreeNode right;
+
+    public TreeNode(int value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+public class Laba4 {
+
+    TreeNode root;
+
+
+    public void preOrder(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        System.out.print(node.value + " ");
+        preOrder(node.left);
+        preOrder(node.right);
+    }
+
+    public void inOrder(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        inOrder(node.left);
+        System.out.print(node.value + " ");
+        inOrder(node.right);
+    }
+
+    public void postOrder(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        postOrder(node.left);
+        postOrder(node.right);
+        System.out.print(node.value + " ");
+    }
+    //ШИРИНА
+    public void levelOrder(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(node);
+
+        while (!queue.isEmpty()) {
+            TreeNode current = queue.poll();
+            System.out.print(current.value + " ");
+
+            if (current.left != null) {
+                queue.add(current.left);
+            }
+            if (current.right != null) {
+                queue.add(current.right);
+            }
+        }
+    }
+
+    public int height(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        int leftHeight = height(node.left);
+        int rightHeight = height(node.right);
+
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+
+    //ПОЛНОТА
+    public boolean isFull(TreeNode node) {
+        if (node == null) {
+            return true;
+        }
+
+        if (node.left == null && node.right == null) {
+            return true;
+        }
+
+        if (node.left != null && node.right != null) {
+            return isFull(node.left) && isFull(node.right);
+        }
+
+        return false;
+    }
+
+    public TreeNode insertBST(TreeNode current, int value) {
+        if (current == null) {
+            return new TreeNode(value);
+        }
+
+        if (value < current.value) {
+            current.left = insertBST(current.left, value);
+        } else if (value > current.value) {
+            current.right = insertBST(current.right, value);
+        }
+
+        return current;
+    }
+
+    public TreeNode sortedArrayToBalancedTree(int[] arr, int start, int end) {
+        if (start > end) {
+            return null;
+        }
+
+
+        int mid = (start + end) / 2;
+        TreeNode node = new TreeNode(arr[mid]);
+
+        node.left = sortedArrayToBalancedTree(arr, start, mid - 1);
+        node.right = sortedArrayToBalancedTree(arr, mid + 1, end);
+
+        return node;
+    }
+
+
+    public static void main(String[] args) {
+        Laba4 lab = new Laba4();
+
+        TreeNode demoRoot = new TreeNode(1);
+        demoRoot.left = new TreeNode(2);
+        demoRoot.right = new TreeNode(3);
+        demoRoot.left.left = new TreeNode(4);
+        demoRoot.left.right = new TreeNode(5);
+
+        System.out.print("PreOrder: ");
+        lab.preOrder(demoRoot);
+        System.out.println();
+
+        System.out.print("LevelOrder: ");
+        lab.levelOrder(demoRoot);
+        System.out.println();
+
+        System.out.println("Высота дерева: " + lab.height(demoRoot));
+
+        System.out.println("\nПолная");
+        System.out.println("Полное? " + lab.isFull(demoRoot));
+
+        demoRoot.right.left = new TreeNode(6);
+        System.out.println("Полное? " + lab.isFull(demoRoot));
+
+        System.out.println("\nПоиска");
+        TreeNode bstRoot = null;
+        int[] values = {50, 30, 20, 40, 70, 60, 80};
+        for (int v : values) {
+            bstRoot = lab.insertBST(bstRoot, v);
+        }
+        //ВСЕ ОК ЕСЛИ ОТСОРТИРОВАН
+        System.out.print("BST InOrder: ");
+        lab.inOrder(bstRoot);
+        System.out.println();
+
+        System.out.println("\nСбалансированное дерево из массива");
+        int[] sortedArr = {1, 2, 3, 4, 5, 6, 7};
+        TreeNode balancedRoot = lab.sortedArrayToBalancedTree(sortedArr, 0, sortedArr.length - 1);
+        System.out.println("Высота сбалансированного дерева: " + lab.height(balancedRoot));
+        System.out.print("PreOrder сбалансированного: ");
+        lab.preOrder(balancedRoot);
+        System.out.println();
+    }
+}
